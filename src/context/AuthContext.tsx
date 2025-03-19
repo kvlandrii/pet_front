@@ -20,12 +20,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const router = useRouter()
 
     useEffect(() => {
-        const token = localStorage.getItem('token')
-        if (token) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const decodedUser: any = jwtDecode(token)
-            setUser(decodedUser)
+        const fetchUser = async () => {
+            const token = localStorage.getItem('token')
+            if (token) {
+                try {
+                    const id: { id: string } = jwtDecode(token)
+                    const res = await axios.get(`http://localhost:8080/api/user/${id}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    })
+                    setUser(res.data)
+                } catch (error) {
+                    console.error('Error fetching user:', error)
+                    logoutUser()
+                }
+            }
         }
+
+        fetchUser()
     }, [])
 
     const registerUser = async (name: string, email: string, password: string) => {

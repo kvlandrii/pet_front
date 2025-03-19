@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useEffect } from 'react'
 import FullScreenLoader from '../loaders/FullScreenLoader'
 
-const ProtectedRoutesWrapper = ({ children }: { children: ReactNode }) => {
+const ProtectedRoutesProvider = ({ children }: { children: ReactNode }) => {
     const { user, isLoading } = useAuth()
     const router = useRouter()
     const pathname = usePathname()
@@ -24,4 +24,4 @@ const ProtectedRoutesWrapper = ({ children }: { children: ReactNode }) => {
     return <>{children}</>
 }
 
-export default ProtectedRoutesWrapper
+export default ProtectedRoutesProvider

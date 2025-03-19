@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
-import { AuthProvider } from '@/context/AuthContext'
 import AppLayout from '@/components/layout/AppLayout'
-import ProtectedRoutesWrapper from '@/components/wrappers/ProtectedRoutesWrapper'
+import ProtectedRoutesProvider from '@/components/providers/ProtectedRoutesProvider'
+import ReactQueryProvider from '@/components/providers/QueryProvider'
+import { AuthProvider } from '@/components/providers/AuthProvider'
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -28,11 +29,13 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-                <AuthProvider>
-                    <ProtectedRoutesWrapper>
-                        <AppLayout>{children}</AppLayout>
-                    </ProtectedRoutesWrapper>
-                </AuthProvider>
+                <ReactQueryProvider>
+                    <AuthProvider>
+                        <ProtectedRoutesProvider>
+                            <AppLayout>{children}</AppLayout>
+                        </ProtectedRoutesProvider>
+                    </AuthProvider>
+                </ReactQueryProvider>
             </body>
         </html>
     )

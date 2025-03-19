@@ -1,28 +1,24 @@
 'use client'
 import { config } from '@/configs/env'
 import { cn } from '@/helpers/cn'
-import { time } from '@/helpers/time'
-import { UserType } from '@/lib/types'
+import { MessageType } from '@/lib/types'
 import { RootState } from '@/redux/store'
 import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { io, Socket } from 'socket.io-client'
-
-interface Message {
-    content: string
-    sender: UserType
-    createdAt: string
-}
+import Message from './Message'
 
 const Chat = () => {
     const user = useSelector((state: RootState) => state.auth.user)
     const socketRef = useRef<Socket | null>(null)
     const [message, setMessage] = useState('')
-    const [messages, setMessages] = useState<Message[]>([])
+    const [messages, setMessages] = useState<MessageType[]>([])
     const selectedUserId = useSelector(
         (state: RootState) => state.chat.selectedUserId
     )
     const [roomName, setRoomName] = useState('')
+    const [isEditMessage, setIsEditMessage] = useState(false)
+    const [editMessageId, setEditMessageId] = useState('')
 
     const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -32,8 +28,49 @@ const Chat = () => {
                 content: message,
                 senderId: user?.id,
             })
+
             setMessage('')
         }
+    }
+
+    const updateMessage = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        if (message.trim()) {
+            socketRef.current?.emit('updateMessage', {
+                roomName: roomName,
+                messageId: editMessageId,
+                content: message,
+            })
+
+            setMessage('')
+            setIsEditMessage(false)
+        }
+    }
+
+    const handleCancelEdit = () => {
+        setIsEditMessage(false)
+        setEditMessageId('')
+        setMessage('')
+    }
+
+    const onInputKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+        if (e.key === 'Escape') {
+            e.preventDefault()
+            handleCancelEdit()
+        }
+    }
+
+    const handleEdit = (message: MessageType) => {
+        setIsEditMessage(true)
+        setEditMessageId(message.id)
+        setMessage(message.content)
+    }
+
+    const handleDelete = (message: MessageType) => {
+        socketRef.current?.emit('deleteMessage', {
+            roomName: roomName,
+            messageId: message.id,
+        })
     }
 
     useEffect(() => {
@@ -52,6 +89,14 @@ const Chat = () => {
 
             socketRef.current.on('message', (data) => {
                 setMessages((prevMessages) => [...prevMessages, data.message])
+            })
+
+            socketRef.current.on('deleteMessage', (data) => {
+                setMessages(data.messages)
+            })
+
+            socketRef.current.on('updateMessage', (data) => {
+                setMessages(data.messages)
             })
 
             socketRef.current.on('error', (data) => {
@@ -78,44 +123,20 @@ const Chat = () => {
                     <>
                         {messages.length === 0 && (
                             <p className="text-center">
-                                Write your first message
+                                Send your first message
                             </p>
                         )}
                         {messages.map((message, index) => (
-                            <div
+                            <Message
                                 key={index}
-                                className={cn(
-                                    'w-full flex items-center',
-                                    message.sender.id === user?.id
-                                        ? 'justify-end'
-                                        : 'justify-start'
-                                )}
-                            >
-                                <div
-                                    className={cn(
-                                        'border flex flex-col gap-1 p-1 max-w-[200px]',
-                                        message.sender.id === user?.id
-                                            ? 'items-end'
-                                            : 'items-start'
-                                    )}
-                                >
-                                    <div
-                                        className={cn(
-                                            'flex items-center gap-3',
-                                            message.sender.id === user?.id &&
-                                                'flex-row-reverse'
-                                        )}
-                                    >
-                                        <span className="text-sm text-gray-200">
-                                            {message.sender.name}
-                                        </span>
-                                        <span className="text-xs text-gray-500">
-                                            {time(message.createdAt)}
-                                        </span>
-                                    </div>
-                                    <p className="text-xs">{message.content}</p>
-                                </div>
-                            </div>
+                                message={message}
+                                onEdit={() => handleEdit(message)}
+                                onDelete={() => handleDelete(message)}
+                                isEdit={
+                                    isEditMessage &&
+                                    editMessageId === message.id
+                                }
+                            />
                         ))}
                     </>
                 ) : (
@@ -124,7 +145,8 @@ const Chat = () => {
             </div>
             {selectedUserId && (
                 <form
-                    onSubmit={sendMessage}
+                    onKeyDown={onInputKeyDown}
+                    onSubmit={isEditMessage ? updateMessage : sendMessage}
                     className="flex w-full h-10 px-2 gap-2 items-center border"
                 >
                     <input
@@ -134,8 +156,17 @@ const Chat = () => {
                         placeholder="Type your message..."
                         className="w-full outline-none"
                     />
+                    {isEditMessage && (
+                        <button
+                            onClick={handleCancelEdit}
+                            type="button"
+                            className="border h-7 px-2"
+                        >
+                            Cancel
+                        </button>
+                    )}
                     <button className="border h-7 px-2" type="submit">
-                        Send
+                        {isEditMessage ? 'Update' : 'Send'}
                     </button>
                 </form>
             )}

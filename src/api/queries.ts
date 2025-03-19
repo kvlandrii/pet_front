@@ -2,6 +2,7 @@ import axiosClient from '@/clients/axiosClient'
 import { TodoType, UserType } from '@/lib/types'
 import { setUser, logout } from '@/redux/slices/authSlice'
 import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 import { useDispatch } from 'react-redux'
 
 export const useUserQuery = () => {
@@ -15,9 +16,13 @@ export const useUserQuery = () => {
                 dispatch(setUser(res.data))
                 return res.data
             } catch (error) {
-                console.error('Error fetching user:', error)
-                dispatch(logout())
-                return null
+                if (axios.isAxiosError(error)) {
+                    if (error.response?.status === 401) {
+                        dispatch(logout())
+                        return null
+                    }
+                }
+                throw error
             }
         },
     })
@@ -28,7 +33,9 @@ export const useTodosQuery = () => {
         queryKey: ['todos'],
         queryFn: async () => {
             try {
-                const res = await axiosClient.get<{ todos: TodoType[] }>('/todos')
+                const res = await axiosClient.get<{ todos: TodoType[] }>(
+                    '/todos'
+                )
                 return res.data.todos
             } catch (error) {
                 console.error('Error fetching todos:', error)
@@ -43,7 +50,9 @@ export const useTodoQuery = (id: string) => {
         queryKey: ['todo', id],
         queryFn: async () => {
             try {
-                const res = await axiosClient.get<{ todo: TodoType }>(`/todos/${id}`)
+                const res = await axiosClient.get<{ todo: TodoType }>(
+                    `/todos/${id}`
+                )
                 return res.data.todo
             } catch (error) {
                 console.error('Error fetching todo:', error)
@@ -58,7 +67,9 @@ export const useUsersQuery = () => {
         queryKey: ['users'],
         queryFn: async () => {
             try {
-                const res = await axiosClient.get<{ users: UserType[] }>('/users/all')
+                const res = await axiosClient.get<{ users: UserType[] }>(
+                    '/users/all'
+                )
                 return res.data.users
             } catch (error) {
                 console.error('Error fetching users:', error)

@@ -10,3 +10,10 @@ export type TodoType = {
     description: string
     completed: boolean
 }
+
+export type MessageType = {
+    id: string
+    content: string
+    sender: UserType
+    createdAt: string
+}

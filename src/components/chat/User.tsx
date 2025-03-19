@@ -15,15 +15,15 @@ const User: FC<Props> = ({ user, onClick }) => {
     )
 
     return (
-        <div
+        <button
             onClick={onClick}
             className={cn(
-                'w-full flex items-center p-1 border',
+                'w-full flex items-center p-1 border hover:cursor-pointer',
                 user.id === selectedUserId && 'bg-white/10'
             )}
         >
             <span className="text-sm">{user.name}</span>
-        </div>
+        </button>
     )
 }
 

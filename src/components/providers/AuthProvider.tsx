@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createContext, ReactNode, useCallback } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { paths } from '@/lib/paths'
+import { USER_API_URL } from '@/lib/variables'
 
 interface User {
     id: string
@@ -27,14 +28,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const queryClient = useQueryClient()
 
     const { data: user, isLoading } = useQuery({
-        queryKey: ['authUser'],
+        queryKey: ['user'],
         queryFn: async () => {
             const token = localStorage.getItem('token')
             if (!token) return null
 
             try {
                 const { id } = jwtDecode<{ id: string }>(token)
-                const res = await axios.get(`http://localhost:8080/api/user/${id}`, {
+                const res = await axios.get(`${USER_API_URL}/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                 return res.data
@@ -48,13 +49,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const loginMutation = useMutation({
         mutationFn: async ({ email, password }: { email: string; password: string }) => {
-            const res = await axios.post('http://localhost:8080/api/user/login', { email, password })
-            localStorage.setItem('token', res.data.token)
-            return res.data.user
+            const res = await axios.post(`${USER_API_URL}/login`, { email, password })
+            return { user: res.data.user, token: res.data.token }
         },
-        onSuccess: (user) => {
-            queryClient.setQueryData(['authUser'], user)
-            queryClient.invalidateQueries({ queryKey: ['authUser'] })
+        onSuccess: ({ user, token }) => {
+            localStorage.setItem('token', token)
+            queryClient.setQueryData(['user'], user)
+            queryClient.invalidateQueries({ queryKey: ['user'] })
             router.push(paths.root)
         },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -65,8 +66,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const registerMutation = useMutation({
         mutationFn: async ({ name, email, password }: { name: string; email: string; password: string }) => {
-            const res = await axios.post('http://localhost:8080/api/user/register', { name, email, password })
-            return res.data.user
+            const res = await axios.post(`${USER_API_URL}/register`, { name, email, password })
+            return { user: res.data.user }
         },
         onSuccess: () => {
             router.push(paths.login.root)
@@ -79,7 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const logoutUser = useCallback(() => {
         localStorage.removeItem('token')
-        queryClient.setQueryData(['authUser'], null)
+        queryClient.setQueryData(['user'], null)
         router.push(paths.login.root)
     }, [queryClient, router])
 

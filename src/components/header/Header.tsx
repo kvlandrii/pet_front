@@ -2,6 +2,7 @@
 import { useAuth } from '@/hook/useAuth'
 import { paths } from '@/lib/paths'
 import Link from 'next/link'
+import { memo } from 'react'
 
 const Header = () => {
     const { user, logoutUser } = useAuth()
@@ -37,4 +38,4 @@ const Header = () => {
     )
 }
 
-export default Header
+export default memo(Header)

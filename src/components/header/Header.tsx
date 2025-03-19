@@ -14,12 +14,15 @@ const Header = () => {
     }
 
     return (
-        <header className="w-full flex items-center justify-center gap-4">
+        <header className="w-full flex items-center justify-center gap-4 h-10">
             <Link href={paths.root} className="text-2xl font-bold hover:underline hover:cursor-pointer">
                 Home
             </Link>
             {user ? (
                 <>
+                    <Link href={paths.todos.root} className="text-2xl font-bold hover:underline hover:cursor-pointer">
+                        Todos
+                    </Link>
                     <Link href={paths.user.root} className="text-2xl font-bold hover:underline hover:cursor-pointer">
                         User
                     </Link>

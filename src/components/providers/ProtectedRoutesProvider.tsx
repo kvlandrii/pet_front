@@ -1,4 +1,3 @@
-// ProtectedRoutesWrapper.tsx
 'use client'
 import { paths } from '@/lib/paths'
 import { usePathname, useRouter } from 'next/navigation'
@@ -11,7 +10,7 @@ const ProtectedRoutesProvider = ({ children }: { children: ReactNode }) => {
     const router = useRouter()
     const pathname = usePathname()
 
-    const isProtectedRoute = pathname.startsWith(paths.user.root)
+    const isProtectedRoute = pathname.startsWith(paths.user.root) || pathname.startsWith(paths.todos.root)
 
     useEffect(() => {
         if (!isLoading && !user && isProtectedRoute) {

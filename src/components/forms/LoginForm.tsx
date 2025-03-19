@@ -3,11 +3,11 @@
 import { LoginSchema } from '@/lib/validation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import FullScreenLoader from '../loaders/FullScreenLoader'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { paths } from '@/lib/paths'
 import { useLoginMutation } from '@/api/mutations'
+import Loading from '@/app/loading'
 
 interface LoginFormValues {
     email: string
@@ -35,7 +35,7 @@ const LoginForm = () => {
         }
     }, [isSuccess, router])
 
-    if (isPending) return <FullScreenLoader />
+    if (isPending) return <Loading />
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-[400px]">

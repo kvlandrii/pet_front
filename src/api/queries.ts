@@ -1,7 +1,7 @@
-import { USER_API_URL } from '@/lib/variables'
+import axiosClient from '@/clients/axiosClient'
+import { TodoType } from '@/lib/types'
 import { setUser, logout } from '@/redux/slices/authSlice'
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 import { useDispatch } from 'react-redux'
 
@@ -16,10 +16,7 @@ export const useUserQuery = () => {
 
             try {
                 const { id } = jwtDecode<{ id: string }>(token)
-                const res = await axios.get(`${USER_API_URL}/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                })
-
+                const res = await axiosClient.get(`/user/${id}`)
                 dispatch(setUser(res.data))
                 return res.data
             } catch (error) {
@@ -30,3 +27,34 @@ export const useUserQuery = () => {
         },
     })
 }
+
+export const useTodosQuery = () => {
+    return useQuery({
+        queryKey: ['todos'],
+        queryFn: async () => {
+            try {
+                const res = await axiosClient.get<{ todos: TodoType[] }>('/todos')
+                return res.data.todos
+            } catch (error) {
+                console.error('Error fetching todos:', error)
+                return null
+            }
+        },
+    })
+}
+
+export const useTodoQuery = (id: string) => {
+    return useQuery({
+        queryKey: ['todo', id],
+        queryFn: async () => {
+            try {
+                const res = await axiosClient.get<{ todo: TodoType }>(`/todos/${id}`)
+                return res.data.todo
+            } catch (error) {
+                console.error('Error fetching todo:', error)
+                return null
+            }
+        },
+    })
+}
+

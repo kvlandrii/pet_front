@@ -6,7 +6,13 @@ export const paths = {
     register: {
         root: '/register',
     },
-    user : {
-        root: '/user'
-    }
+    user: {
+        root: '/user',
+    },
+    todos: {
+        root: '/todos',
+        create: '/todos/create',
+        delete: `/todos/delete`,
+        edit: (id: string) => `/todos/edit/${id}`,
+    },
 }

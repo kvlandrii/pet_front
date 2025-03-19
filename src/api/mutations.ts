@@ -1,3 +1,4 @@
+import axiosClient from '@/clients/axiosClient'
 import { queryClient } from '@/clients/queryClient'
 import { USER_API_URL } from '@/lib/variables'
 import { setUser } from '@/redux/slices/authSlice'
@@ -26,10 +27,52 @@ export const useLoginMutation = () => {
 export const useRegisterMutation = () => {
     return useMutation({
         mutationKey: ['register'],
-        mutationFn: async ({ name, email, password }: { name: string; email: string; password: string }) => {
-            const res = await axios.post(`${USER_API_URL}/register`, { name, email, password })
+        mutationFn: async (data: { name: string; email: string; password: string }) => {
+            const res = await axios.post(`${USER_API_URL}/register`, data)
             return res.data
         },
         onError: (error: AxiosError<{ message: string }>) => error,
+    })
+}
+
+export const useDeleteTodoMutation = () => {
+    return useMutation({
+        mutationKey: ['deleteTodo'],
+        mutationFn: async (id: string) => {
+            const res = await axiosClient.delete(`/todos/delete/${id}`)
+            return res.data
+        },
+        onError: (error: AxiosError<{ message: string }>) => error,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['todos'] })
+        },
+    })
+}
+
+export const useCreateTodoMutation = () => {
+    return useMutation({
+        mutationKey: ['createTodo'],
+        mutationFn: async (data: { title: string; description: string; completed: boolean }) => {
+            const res = await axiosClient.post(`/todos/create`, data)
+            return res.data
+        },
+        onError: (error: AxiosError<{ message: string }>) => error,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['todos'] })
+        },
+    })
+}
+
+export const useUpdateTodoMutation = () => {
+    return useMutation({
+        mutationKey: ['updateTodo'],
+        mutationFn: async (data: { id: string; title: string; description: string; completed: boolean }) => {
+            const res = await axiosClient.put(`/todos/update/${data.id}`, data)
+            return res.data
+        },
+        onError: (error: AxiosError<{ message: string }>) => error,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['todos'] })
+        },
     })
 }

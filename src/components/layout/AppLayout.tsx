@@ -3,9 +3,9 @@ import Header from '../header/Header'
 
 const AppLayout = ({ children }: { children: ReactNode }) => {
     return (
-        <div className="flex flex-col w-full h-screen">
+        <div className="flex flex-col w-full h-svh">
             <Header />
-            <main>{children}</main>
+            <main className="h-[calc(100svh-40px)] flex flex-col w-full">{children}</main>
         </div>
     )
 }

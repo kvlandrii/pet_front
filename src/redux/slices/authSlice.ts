@@ -1,11 +1,11 @@
 'use client'
 
 import { queryClient } from '@/clients/queryClient'
-import { User } from '@/lib/types'
+import { UserType } from '@/lib/types'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 interface AuthState {
-    user: User | null
+    user: UserType | null
 }
 
 const initialState: AuthState = {
@@ -16,7 +16,7 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setUser: (state, action: PayloadAction<User | null>) => {
+        setUser: (state, action: PayloadAction<UserType | null>) => {
             state.user = action.payload
         },
         logout: (state) => {

@@ -16,3 +16,10 @@ export const LoginSchema = z.object({
     email: z.string().email('Invalid email format'),
     password: z.string().min(6, 'Password must be at least 6 characters long'),
 })
+
+
+export const TodoSchema = z.object({
+    title: z.string().min(2, 'Title must be at least 2 characters long'),
+    description: z.string().min(2, 'Description must be at least 2 characters long'),
+    completed: z.boolean(),
+})

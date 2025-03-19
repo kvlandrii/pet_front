@@ -1,22 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 interface ChatState {
-    chatWithId: string
+    selectedUserId: string
 }
 
 const initialState: ChatState = {
-    chatWithId: '',
+    selectedUserId: '',
 }
 
 const chatSlice = createSlice({
     name: 'chat',
     initialState,
     reducers: {
-        setChatWithId: (state, action) => {
-            state.chatWithId = action.payload
+        setSelectedUserId: (state, action) => {
+            state.selectedUserId = action.payload
         },
     },
 })
 
-export const { setChatWithId } = chatSlice.actions
+export const { setSelectedUserId } = chatSlice.actions
 export const chatReducer = chatSlice.reducer

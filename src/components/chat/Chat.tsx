@@ -7,9 +7,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { io, Socket } from 'socket.io-client'
 import Message from './Message'
+import { getToken } from '@/helpers/getToken'
 
 const Chat = () => {
-    const user = useSelector((state: RootState) => state.auth.user)
     const socketRef = useRef<Socket | null>(null)
     const [message, setMessage] = useState('')
     const [messages, setMessages] = useState<MessageType[]>([])
@@ -26,7 +26,6 @@ const Chat = () => {
             socketRef.current?.emit('message', {
                 roomName: roomName,
                 content: message,
-                senderId: user?.id,
             })
 
             setMessage('')
@@ -75,10 +74,11 @@ const Chat = () => {
 
     useEffect(() => {
         if (selectedUserId) {
-            socketRef.current = io(config.socketUrl)
+            socketRef.current = io(config.socketUrl, {
+                auth: { token: getToken() },
+            })
 
             socketRef.current.emit('join', {
-                userId: user?.id,
                 partnerId: selectedUserId,
             })
 
@@ -107,7 +107,7 @@ const Chat = () => {
         return () => {
             socketRef.current?.disconnect()
         }
-    }, [selectedUserId, user])
+    }, [selectedUserId])
 
     return (
         <div className="flex flex-col w-[500px] gap-2 h-[700px]">

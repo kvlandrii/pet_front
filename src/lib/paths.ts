@@ -15,4 +15,7 @@ export const paths = {
         delete: `/todos/delete`,
         edit: (id: string) => `/todos/edit/${id}`,
     },
+    chat: {
+        root: '/chat',
+    },
 }

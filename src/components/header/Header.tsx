@@ -23,6 +23,9 @@ const Header = () => {
                     <Link href={paths.todos.root} className="text-2xl font-bold hover:underline hover:cursor-pointer">
                         Todos
                     </Link>
+                    <Link href={paths.chat.root} className="text-2xl font-bold hover:underline hover:cursor-pointer">
+                        Chat
+                    </Link>
                     <Link href={paths.user.root} className="text-2xl font-bold hover:underline hover:cursor-pointer">
                         User
                     </Link>

@@ -1,8 +1,7 @@
 import axiosClient from '@/clients/axiosClient'
-import { TodoType } from '@/lib/types'
+import { TodoType, UserType } from '@/lib/types'
 import { setUser, logout } from '@/redux/slices/authSlice'
 import { useQuery } from '@tanstack/react-query'
-import { jwtDecode } from 'jwt-decode'
 import { useDispatch } from 'react-redux'
 
 export const useUserQuery = () => {
@@ -11,12 +10,8 @@ export const useUserQuery = () => {
     return useQuery({
         queryKey: ['user'],
         queryFn: async () => {
-            const token = localStorage.getItem('token')
-            if (!token) return null
-
             try {
-                const { id } = jwtDecode<{ id: string }>(token)
-                const res = await axiosClient.get(`/user/${id}`)
+                const res = await axiosClient.get(`/user/me`)
                 dispatch(setUser(res.data))
                 return res.data
             } catch (error) {
@@ -58,3 +53,17 @@ export const useTodoQuery = (id: string) => {
     })
 }
 
+export const useUsersQuery = () => {
+    return useQuery({
+        queryKey: ['users'],
+        queryFn: async () => {
+            try {
+                const res = await axiosClient.get<{ users: UserType[] }>('/users/all')
+                return res.data.users
+            } catch (error) {
+                console.error('Error fetching users:', error)
+                return null
+            }
+        },
+    })
+}

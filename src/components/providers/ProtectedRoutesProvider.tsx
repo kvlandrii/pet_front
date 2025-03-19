@@ -10,7 +10,10 @@ const ProtectedRoutesProvider = ({ children }: { children: ReactNode }) => {
     const router = useRouter()
     const pathname = usePathname()
 
-    const isProtectedRoute = pathname.startsWith(paths.user.root) || pathname.startsWith(paths.todos.root)
+    const isProtectedRoute =
+        pathname.startsWith(paths.user.root) ||
+        pathname.startsWith(paths.todos.root) ||
+        pathname.startsWith(paths.chat.root)
 
     useEffect(() => {
         if (!isLoading && !user && isProtectedRoute) {

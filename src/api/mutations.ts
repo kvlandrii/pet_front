@@ -1,9 +1,8 @@
 import axiosClient from '@/clients/axiosClient'
 import { queryClient } from '@/clients/queryClient'
-import { USER_API_URL } from '@/lib/variables'
 import { setUser } from '@/redux/slices/authSlice'
 import { useMutation } from '@tanstack/react-query'
-import axios, { AxiosError } from 'axios'
+import { AxiosError } from 'axios'
 import { useDispatch } from 'react-redux'
 
 export const useLoginMutation = () => {
@@ -12,7 +11,7 @@ export const useLoginMutation = () => {
     return useMutation({
         mutationKey: ['login'],
         mutationFn: async ({ email, password }: { email: string; password: string }) => {
-            const res = await axios.post(`${USER_API_URL}/login`, { email, password })
+            const res = await axiosClient.post(`/user/login`, { email, password })
             return { user: res.data.user, token: res.data.token }
         },
         onSuccess: ({ user, token }) => {
@@ -28,7 +27,7 @@ export const useRegisterMutation = () => {
     return useMutation({
         mutationKey: ['register'],
         mutationFn: async (data: { name: string; email: string; password: string }) => {
-            const res = await axios.post(`${USER_API_URL}/register`, data)
+            const res = await axiosClient.post(`/user/register`, data)
             return res.data
         },
         onError: (error: AxiosError<{ message: string }>) => error,

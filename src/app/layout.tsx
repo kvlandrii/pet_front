@@ -4,7 +4,7 @@ import './globals.css'
 import AppLayout from '@/components/layout/AppLayout'
 import ProtectedRoutesProvider from '@/components/providers/ProtectedRoutesProvider'
 import ReactQueryProvider from '@/components/providers/QueryProvider'
-import { AuthProvider } from '@/components/providers/AuthProvider'
+import ReduxProvider from '@/components/providers/ReduxProvider'
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -29,13 +29,13 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-                <ReactQueryProvider>
-                    <AuthProvider>
+                <ReduxProvider>
+                    <ReactQueryProvider>
                         <ProtectedRoutesProvider>
                             <AppLayout>{children}</AppLayout>
                         </ProtectedRoutesProvider>
-                    </AuthProvider>
-                </ReactQueryProvider>
+                    </ReactQueryProvider>
+                </ReduxProvider>
             </body>
         </html>
     )

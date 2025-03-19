@@ -1,11 +1,13 @@
 'use client'
 
-import { useAuth } from '@/hook/useAuth'
 import { RegisterSchema } from '@/lib/validation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import FullScreenLoader from '../loaders/FullScreenLoader'
+import { useRegisterMutation } from '@/api/mutations'
+import { paths } from '@/lib/paths'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 type RegisterFormValues = {
     name: string
@@ -15,8 +17,7 @@ type RegisterFormValues = {
 }
 
 const RegisterForm = () => {
-    const { registerUser } = useAuth()
-    const [isPending, startTransition] = useTransition()
+    const { isPending, mutate: registerUser, isSuccess, error } = useRegisterMutation()
     const {
         register,
         handleSubmit,
@@ -24,14 +25,19 @@ const RegisterForm = () => {
     } = useForm<RegisterFormValues>({
         resolver: zodResolver(RegisterSchema),
     })
+    const router = useRouter()
 
     const onSubmit = async (data: RegisterFormValues) => {
-        startTransition(async () => {
-            await registerUser(data.name, data.email, data.password)
-        })
+        registerUser(data)
     }
 
-    if (isPending) return <FullScreenLoader/>
+    useEffect(() => {
+        if (isSuccess) {
+            router.push(paths.login.root)
+        }
+    }, [isSuccess, router])
+
+    if (isPending) return <FullScreenLoader />
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-[400px]">
@@ -82,6 +88,7 @@ const RegisterForm = () => {
             >
                 {isSubmitting ? 'Registering...' : 'Register'}
             </button>
+            {error && <span className="text-red-500">{error.response?.data?.message}</span>}
         </form>
     )
 }

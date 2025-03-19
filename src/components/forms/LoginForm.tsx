@@ -1,11 +1,13 @@
 'use client'
 
-import { useAuth } from '@/hook/useAuth'
 import { LoginSchema } from '@/lib/validation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import FullScreenLoader from '../loaders/FullScreenLoader'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { paths } from '@/lib/paths'
+import { useLoginMutation } from '@/api/mutations'
 
 interface LoginFormValues {
     email: string
@@ -13,8 +15,7 @@ interface LoginFormValues {
 }
 
 const LoginForm = () => {
-    const { loginUser } = useAuth()
-    const [isPending, startTransition] = useTransition()
+    const { isPending, mutate: loginMutation, isSuccess, error } = useLoginMutation()
     const {
         register,
         handleSubmit,
@@ -22,12 +23,17 @@ const LoginForm = () => {
     } = useForm<LoginFormValues>({
         resolver: zodResolver(LoginSchema),
     })
+    const router = useRouter()
 
     const onSubmit = async (data: LoginFormValues) => {
-        startTransition(async () => {
-            await loginUser(data.email, data.password)
-        })
+        loginMutation(data)
     }
+
+    useEffect(() => {
+        if (isSuccess) {
+            router.push(paths.root)
+        }
+    }, [isSuccess, router])
 
     if (isPending) return <FullScreenLoader />
 
@@ -60,6 +66,7 @@ const LoginForm = () => {
             >
                 {isSubmitting ? 'Logging in...' : 'Login'}
             </button>
+            {error && <span className="text-red-500">{error.response?.data?.message}</span>}
         </form>
     )
 }

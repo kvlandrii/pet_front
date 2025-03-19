@@ -1,11 +1,17 @@
 'use client'
-import { useAuth } from '@/hook/useAuth'
 import { paths } from '@/lib/paths'
+import { logout } from '@/redux/slices/authSlice'
+import { RootState } from '@/redux/store'
 import Link from 'next/link'
 import { memo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 const Header = () => {
-    const { user, logoutUser } = useAuth()
+    const dispatch = useDispatch()
+    const user = useSelector((state: RootState) => state.auth.user)
+    const logoutUser = () => {
+        dispatch(logout())
+    }
 
     return (
         <header className="w-full flex items-center justify-center gap-4">

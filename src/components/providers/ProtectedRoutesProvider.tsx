@@ -1,13 +1,13 @@
 // ProtectedRoutesWrapper.tsx
 'use client'
-import { useAuth } from '@/hook/useAuth'
 import { paths } from '@/lib/paths'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useEffect } from 'react'
 import FullScreenLoader from '../loaders/FullScreenLoader'
+import { useUserQuery } from '@/api/queries'
 
 const ProtectedRoutesProvider = ({ children }: { children: ReactNode }) => {
-    const { user, isLoading } = useAuth()
+    const { data: user, isLoading } = useUserQuery()
     const router = useRouter()
     const pathname = usePathname()
 

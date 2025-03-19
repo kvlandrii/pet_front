@@ -1,4 +1,4 @@
-import FullScreenLoader from '@/components/forms/loaders/FullScreenLoader'
+import FullScreenLoader from '@/components/loaders/FullScreenLoader'
 
 export default function Loading() {
     return <FullScreenLoader />

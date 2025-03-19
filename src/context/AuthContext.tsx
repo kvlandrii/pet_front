@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 email,
                 password,
             })
-            router.push('/')
+            router.push('/login')
             //eslint-disable-next-line
         } catch (error: any) {
             console.error(error.response?.data?.message || 'Registration failed')
@@ -48,7 +48,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 email,
                 password,
             })
-
             localStorage.setItem('token', res.data.token)
             setUser(res.data.user)
             router.push('/')

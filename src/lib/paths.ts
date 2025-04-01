@@ -15,6 +15,9 @@ export const paths = {
         delete: `/todos/delete`,
         edit: (id: string) => `/todos/edit/${id}`,
     },
+    gqlTodos: {
+        root: '/gql-todos',
+    },
     chat: {
         root: '/chat',
     },

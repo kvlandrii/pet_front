@@ -13,7 +13,8 @@ const ProtectedRoutesProvider = ({ children }: { children: ReactNode }) => {
     const isProtectedRoute =
         pathname.startsWith(paths.user.root) ||
         pathname.startsWith(paths.todos.root) ||
-        pathname.startsWith(paths.chat.root)
+        pathname.startsWith(paths.chat.root) ||
+        pathname.startsWith(paths.gqlTodos.root) 
 
     useEffect(() => {
         if (!isLoading && !user && isProtectedRoute) {

@@ -1,3 +1,7 @@
 export const getToken = () => {
-    return localStorage.getItem('token')
+    if (typeof window === 'undefined') {
+        return null
+    }
+    const token = localStorage.getItem('token')
+    return token ? `Bearer ${token}` : null
 }

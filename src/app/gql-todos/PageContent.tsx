@@ -18,7 +18,7 @@ const PageContent = () => {
         <div className="flex items-center justify-center w-full py-10">
             <div className="w-[500px] flex flex-col gap-5">
                 <div className="flex items-center justify-between">
-                    <Link href={paths.todos.create} className="border p-2">
+                    <Link href={paths.gqlTodos.create} className="border p-2">
                         Create new
                     </Link>
                 </div>

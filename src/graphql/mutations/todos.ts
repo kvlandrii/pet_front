@@ -10,3 +10,14 @@ export const DELETE_TODO = gql`
         }
     }
 `
+
+export const CREATE_TODO = gql`
+    mutation LoginUserMutation($input: CreateTodoInput!) {
+        createTodo: createTodoMutation(input: $input) {
+            title
+            id
+            description
+            completed
+        }
+    }
+`

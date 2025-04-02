@@ -13,6 +13,7 @@ interface TodoProps {
 
 const TodoGQL: FC<TodoProps> = ({ todo, order }) => {
     const [deleteTodoMutation, { loading }] = useMutation(DELETE_TODO, {
+        variables: { id: todo.id },
         update(cache) {
             const { todos } = cache.readQuery({ query: GET_TODOS }) as {
                 todos: TodoType[]
@@ -48,9 +49,7 @@ const TodoGQL: FC<TodoProps> = ({ todo, order }) => {
                 </Link>
                 <button
                     disabled={loading}
-                    onClick={() =>
-                        deleteTodoMutation({ variables: { id: todo.id } })
-                    }
+                    onClick={() => deleteTodoMutation()}
                     className="text-xs border h-5 px-2"
                 >
                     {loading ? 'Loading...' : 'Delete'}

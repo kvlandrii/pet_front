@@ -17,6 +17,7 @@ export const paths = {
     },
     gqlTodos: {
         root: '/gql-todos',
+        create: '/gql-todos/create',
     },
     chat: {
         root: '/chat',

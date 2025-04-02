@@ -42,7 +42,7 @@ const TodoGQL: FC<TodoProps> = ({ todo, order }) => {
             </div>
             <div className="flex flex-col gap-2 items-end">
                 <Link
-                    href={paths.todos.edit(todo.id)}
+                    href={paths.gqlTodos.edit(todo.id)}
                     className="text-xs border h-5 px-2"
                 >
                     Edit

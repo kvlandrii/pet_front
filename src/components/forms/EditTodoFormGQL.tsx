@@ -1,50 +1,76 @@
 'use client'
 import Loading from '@/app/loading'
-import { CREATE_TODO } from '@/graphql/mutations/todos'
-import { GET_TODOS } from '@/graphql/queries/todos'
+import { UPDATE_TODO } from '@/graphql/mutations/todos'
+import { GET_TODO, GET_TODOS } from '@/graphql/queries/todos'
 import { paths } from '@/lib/paths'
 import { TodoType } from '@/lib/types'
 import { TodoSchema } from '@/lib/validation'
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
-interface CreateTodoFormValues {
+interface EditTodoFormValues {
     title: string
     description: string
     completed: boolean
 }
 
-const CreateTodoFormGQL = () => {
+const EditTodoForm = () => {
     const router = useRouter()
-
-    const [createTodo, { loading, error }] = useMutation(CREATE_TODO, {
-        onCompleted: () => {
-            router.push(paths.gqlTodos.root)
-        },
-        update(cache, { data: { createTodo } }) {
-            const { todos } = cache.readQuery({ query: GET_TODOS }) as {
-                todos: TodoType[]
-            }
-            cache.writeQuery({
-                query: GET_TODOS,
-                data: { todos: [...todos, createTodo] },
-            })
-        },
+    const { id: todoId }: { id: string } = useParams()
+    const { data, loading } = useQuery(GET_TODO, {
+        variables: { id: todoId },
     })
+    const [updateTodo, { loading: updateTodoLoading, error }] = useMutation(
+        UPDATE_TODO,
+        {
+            update(cache, { data: { updateTodo } }) {
+                const { todos } = cache.readQuery({ query: GET_TODOS }) as {
+                    todos: TodoType[]
+                }
+                const updatedTodos = todos.map((todo) =>
+                    todo.id === todoId ? { ...todo, ...updateTodo } : todo
+                )
+                cache.writeQuery({
+                    query: GET_TODO,
+                    variables: { id: todoId },
+                    data: { todo: updateTodo },
+                })
+                cache.writeQuery({
+                    query: GET_TODOS,
+                    data: { todos: updatedTodos },
+                })
+            },
+            onCompleted: () => {
+                router.push(paths.gqlTodos.root)
+            },
+        }
+    )
 
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors, isSubmitting },
-    } = useForm<CreateTodoFormValues>({ resolver: zodResolver(TodoSchema) })
+    } = useForm<EditTodoFormValues>({
+        resolver: zodResolver(TodoSchema),
+    })
 
-    const onSubmit = async (data: CreateTodoFormValues) => {
-        createTodo({ variables: { input: data } })
+    const onSubmit = async (data: EditTodoFormValues) => {
+        updateTodo({ variables: { input: { id: todoId, ...data } } })
     }
 
-    if (loading) return <Loading />
+    useEffect(() => {
+        if (data?.todo) {
+            setValue('title', data.todo.title)
+            setValue('description', data.todo.description)
+            setValue('completed', data.todo.completed)
+        }
+    }, [data, setValue, register])
+
+    if (loading || updateTodoLoading) return <Loading />
 
     return (
         <form
@@ -90,11 +116,11 @@ const CreateTodoFormGQL = () => {
                 disabled={isSubmitting}
                 className="bg-white text-black disabled:bg-gray-200 disabled:text-gray-400"
             >
-                {isSubmitting ? 'Creating...' : 'Create'}
+                {isSubmitting ? 'Updating...' : 'Update'}
             </button>
             {error && <span className="text-red-500">{error.message}</span>}
         </form>
     )
 }
 
-export default CreateTodoFormGQL
+export default EditTodoForm

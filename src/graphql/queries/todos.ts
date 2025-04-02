@@ -10,3 +10,13 @@ export const GET_TODOS = gql`
         }
     }
 `
+
+export const GET_TODO = gql`
+    query GetMeQuery($id: ID!) {
+        todo: getTodoByIdQuery(id: $id) {
+            title
+            description
+            completed
+        }
+    }
+`

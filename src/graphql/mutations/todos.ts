@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 export const DELETE_TODO = gql`
     mutation DeleteTodoMutation($id: ID!) {
-        deleteTodoMutation(id: $id) {
+        deleteTodo: deleteTodoMutation(id: $id) {
             id
             title
             description
@@ -16,6 +16,16 @@ export const CREATE_TODO = gql`
         createTodo: createTodoMutation(input: $input) {
             title
             id
+            description
+            completed
+        }
+    }
+`
+
+export const UPDATE_TODO = gql`
+    mutation UpdateTodoMutation($input: UpdateTodoInput!) {
+        updateTodo: updateTodoMutation(input: $input) {
+            title
             description
             completed
         }

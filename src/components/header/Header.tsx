@@ -31,7 +31,9 @@ const Header = () => {
                         className={cn(
                             'text-2xl font-bold hover:underline hover:cursor-pointer',
                             {
-                                underline: pathname === paths.todos.root,
+                                underline: pathname.startsWith(
+                                    paths.todos.root
+                                ),
                             }
                         )}
                     >
@@ -42,7 +44,7 @@ const Header = () => {
                         className={cn(
                             'text-2xl font-bold hover:underline hover:cursor-pointer',
                             {
-                                underline: pathname === paths.gqlTodos.root,
+                                underline: pathname.startsWith(paths.gqlTodos.root),
                             }
                         )}
                     >
@@ -53,7 +55,7 @@ const Header = () => {
                         className={cn(
                             'text-2xl font-bold hover:underline hover:cursor-pointer',
                             {
-                                underline: pathname === paths.chat.root,
+                                underline: pathname.startsWith(paths.chat.root),
                             }
                         )}
                     >
@@ -64,7 +66,7 @@ const Header = () => {
                         className={cn(
                             'text-2xl font-bold hover:underline hover:cursor-pointer',
                             {
-                                underline: pathname === paths.user.root,
+                                underline: pathname.startsWith(paths.user.root),
                             }
                         )}
                     >
